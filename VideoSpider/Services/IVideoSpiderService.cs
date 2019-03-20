@@ -4,7 +4,7 @@ using System.Text;
 using System.Threading.Tasks;
 using VideoSpider.Models;
 
-namespace VideoSpider
+namespace VideoSpider.Services
 {
     public interface IVideoSpiderService
     {

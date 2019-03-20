@@ -14,7 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\HtmlSpider\HtmlSpider.csproj" />
+    <ProjectReference Include="..\HtmlSpider\HtmlSpider.csproj" />
     <ProjectReference Include="..\VideoSpider\VideoSpider.csproj" />
   </ItemGroup>
 

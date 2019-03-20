@@ -11,7 +11,7 @@ namespace VideoSpider.Services
 {
     public class Channel9VideoSpiderService : IVideoSpiderService
     {
-        private static HttpClient _httpClient = new HttpClient(
+        private HttpClient _httpClient = new HttpClient(
             new HttpClientHandler()
             {
                 AutomaticDecompression = System.Net.DecompressionMethods.GZip
