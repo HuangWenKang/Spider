@@ -3,19 +3,21 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28307.168
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HtmlSpider.Test", "HtmlSpider.Test\HtmlSpider.Test.csproj", "{6E4D888D-13A4-4FCB-88DE-C5AD7C278E91}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HtmlSpider.Test", "HtmlSpider.Test\HtmlSpider.Test.csproj", "{6E4D888D-13A4-4FCB-88DE-C5AD7C278E91}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VideoSpider", "VideoSpider\VideoSpider.csproj", "{16DF1ACE-C951-4D27-9218-4CC181A4F8DD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VideoSpider", "VideoSpider\VideoSpider.csproj", "{16DF1ACE-C951-4D27-9218-4CC181A4F8DD}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Spider", "Spider", "{14DC05C0-816F-4C40-8CC5-112825C886DC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Spider.API", "Spider.API\Spider.API.csproj", "{D811EA7F-1DA2-426C-A3CF-979BA8A8B9F2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Spider.API", "Spider.API\Spider.API.csproj", "{D811EA7F-1DA2-426C-A3CF-979BA8A8B9F2}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HtmlSpider", "HtmlSpider\HtmlSpider.csproj", "{AFEDB13E-1D1E-4731-9501-7F1376E055A1}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test", "Test", "{E15EAFBC-D6B3-4595-BDEE-4BAF0F421CFA}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "API", "API", "{060EE42D-1807-4FC9-9847-EA2ACAE503BE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Spider.Scheduler", "Spider.Scheduler\Spider.Scheduler.csproj", "{38AAE6B9-62E4-4DA1-866E-49E0B749208A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +41,10 @@ Global
 		{AFEDB13E-1D1E-4731-9501-7F1376E055A1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AFEDB13E-1D1E-4731-9501-7F1376E055A1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AFEDB13E-1D1E-4731-9501-7F1376E055A1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{38AAE6B9-62E4-4DA1-866E-49E0B749208A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{38AAE6B9-62E4-4DA1-866E-49E0B749208A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{38AAE6B9-62E4-4DA1-866E-49E0B749208A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{38AAE6B9-62E4-4DA1-866E-49E0B749208A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -48,6 +54,7 @@ Global
 		{16DF1ACE-C951-4D27-9218-4CC181A4F8DD} = {14DC05C0-816F-4C40-8CC5-112825C886DC}
 		{D811EA7F-1DA2-426C-A3CF-979BA8A8B9F2} = {060EE42D-1807-4FC9-9847-EA2ACAE503BE}
 		{AFEDB13E-1D1E-4731-9501-7F1376E055A1} = {14DC05C0-816F-4C40-8CC5-112825C886DC}
+		{38AAE6B9-62E4-4DA1-866E-49E0B749208A} = {060EE42D-1807-4FC9-9847-EA2ACAE503BE}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {1BEF290B-1044-43CC-835E-C17E2C0583F5}
