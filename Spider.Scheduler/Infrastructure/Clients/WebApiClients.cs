@@ -1,27 +1,21 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Spider.Scheduler.Services
+namespace Scheduler.API.Infrastructure.Clients
 {
     public class WebApiClients
     {
         private readonly CancellationTokenSource _cTokenSource = new CancellationTokenSource();
-        private HttpClient _client;
-        private IBasicDataService _basicDataService;
-        public WebApiClients(HttpClient client, IBasicDataService basicDataService)
+        private HttpClient _client;        
+        public WebApiClients(HttpClient client)
         {
             _client = client;
             _client.Timeout = new TimeSpan(0, 0, 30);
             _client.DefaultRequestHeaders.Clear();
-            _client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("text/plain"));
-
-
-            _basicDataService = basicDataService;
+            _client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("text/plain"));            
         }
 
         public async Task CallWebApiAsync(string webApiUrl, string payload)
@@ -42,6 +36,6 @@ namespace Spider.Scheduler.Services
                 var stream = await response.Content.ReadAsStreamAsync();
                 response.EnsureSuccessStatusCode();
             }
-        }
+        }        
     }
 }

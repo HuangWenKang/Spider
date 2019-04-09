@@ -6,11 +6,15 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Spider.Scheduler.Infrastructure.Repositories;
 using Spider.Scheduler.Models;
-using Spider.Scheduler.Services;
 using Swashbuckle.AspNetCore.Swagger;
 using Hangfire.MemoryStorage;
 using Hangfire;
 using Spider.Scheduler.Infrastructure.Middlewares;
+using Scheduler.API;
+using Hangfire.Mongo;
+using Scheduler.API.Infrastructure.Clients;
+using Scheduler.API.Infrastructure.Converters;
+using Scheduler.API.Services;
 
 namespace Spider.Scheduler
 {
@@ -28,13 +32,19 @@ namespace Spider.Scheduler
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+
+            services.Configure<ScheduleSettings>(options => Configuration.GetSection("ScheduleSettings").Bind(options));
             services.AddDbContext<JobContext>(o => o.UseInMemoryDatabase("JobDatabase"));
 
             services.AddScoped<IUnitOfWork, UnitofWork>();
-            services.AddScoped<IRepository<ScheduleJob>, ScheduleJobRepository>();            
-            services.AddScoped<IBasicDataService, FakeBasicDataService>();
+            services.AddScoped<IRepository<ScheduleJob>, ScheduleJobRepository>();
+            services.AddScoped<IPayloadEnricher, PayloadEnricher>();
+
+            services.AddScoped<ITaskService, TaskService>();
+
 
             services.AddHttpClient<WebApiClients>();
+            services.AddHttpClient<BasicDataClients>();
 
 
             services.AddSwaggerGen(c =>
@@ -43,9 +53,18 @@ namespace Spider.Scheduler
                 c.DescribeAllEnumsAsStrings();
             });
 
+            var settings = Configuration.GetSection("ScheduleSettings").Get<ScheduleSettings>();
             services.AddHangfire(config =>
             {
-                config.UseMemoryStorage();
+                if (string.IsNullOrWhiteSpace(settings.ConnectionString))
+                {
+                    config.UseMemoryStorage();
+                }
+                else
+                {
+                    config.UseMongoStorage(settings.ConnectionString, settings.Database);
+                }
+                
             });
         }
 

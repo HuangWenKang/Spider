@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net;
-using System.Threading.Tasks;
 using Hangfire;
 using Microsoft.AspNetCore.Mvc;
 using Spider.Scheduler.Infrastructure.Repositories;
 using Spider.Scheduler.Models;
-using Spider.Scheduler.Services;
+using static Spider.Scheduler.Models.ScheduleJob;
+using System.Linq;
+using Scheduler.API.Infrastructure.Clients;
+using Scheduler.API.Services;
 
 namespace Spider.Scheduler.Controllers
 {
@@ -14,68 +16,68 @@ namespace Spider.Scheduler.Controllers
     [ApiController]
     public class SchedulerController : ControllerBase
     {
-        private IUnitOfWork _uof;
-        private IRepository<ScheduleJob> _repository;
-        private WebApiClients _clients;
+        private ITaskService _taskService;        
 
-        public SchedulerController(IUnitOfWork uof, IRepository<ScheduleJob> repository, WebApiClients clients)
+        public SchedulerController(ITaskService taskService)
         {
-            _uof = uof;
-            _repository = repository;
-            _clients = clients;
+            _taskService = taskService;
         }
 
         [HttpGet]
-        public ActionResult<List<ScheduleJob>> ListJobs()
+        public ActionResult<List<dynamic>> ListJobs()
         {
-            var jobs = _uof.ScheduleJobs.FindAll();
+            var jobs = _taskService.FindAll().Select(j => new
+            {
+                j.ID,
+                j.Name,
+                j.WebApiUrl,
+                j.JsonPayload,
+                RecurringSchedule = j.RecurringSchedule.ToString(),
+                j.LanguageListUrl
+            });
             return Ok(jobs);
         }
 
-        [Route("")]
+        [Route("{schedule}/{jobType}")]
         [HttpPost]
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-        public ActionResult Create([FromBody] JobForCreation jobForCreation)
+        public ActionResult Create([FromRoute]RecurringScheduleType schedule, [FromRoute]JobType jobType, [FromBody] JobViewModel jobForCreation)
         {
-            if (ModelState.IsValid)
+            var job = new ScheduleJob()
             {
-                var job = new ScheduleJob()
-                {
-                    JsonPayload = jobForCreation.JsonPayload,
-                    RecurringSchedule = jobForCreation.RecurringScheduleType,
-                    WebApiUrl = jobForCreation.WebApiUrl
-                };
+                WebApiUrl = jobForCreation.WebApiUrl,
+                JsonPayload = jobForCreation.JsonPayload,
+                RecurringSchedule = schedule,
+                Name = jobForCreation.Name,
+                JobCategory = jobType,
+                LanguageListUrl = jobForCreation.LanguageListUrl
+            };
 
-                _uof.ScheduleJobs.Add(job);
-                _uof.SaveChanges();
-
-                var cronType = GetCronFromRecurringType(job.RecurringSchedule);
-                RecurringJob.AddOrUpdate(job.ID.ToString(), () => _clients.CallWebApiAsync(job.WebApiUrl, job.JsonPayload), cronType);
-
-                return Ok();
-            }
-
-            return BadRequest();
+            _taskService.SaveThenRun(job);
+            
+            return Ok();
         }
 
-        [Route("")]
+        [Route("{schedule}/{jobType}")]
         [HttpPut]
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-        public ActionResult Edit([FromBody] ScheduleJob updateScheduleJob)
+        public ActionResult Edit([FromRoute]RecurringScheduleType schedule, [FromRoute]JobType jobType, [FromBody] JobViewModel jobForUpdate)
         {
-            if (ModelState.IsValid)
+            var job = new ScheduleJob()
             {
-                _uof.ScheduleJobs.Update(updateScheduleJob);
-                _uof.SaveChanges();
+                ID = jobForUpdate.Id,
+                Name = jobForUpdate.Name,
+                RecurringSchedule = schedule,
+                WebApiUrl = jobForUpdate.WebApiUrl,
+                JsonPayload = jobForUpdate.JsonPayload,
+                JobCategory = jobType,
+                LanguageListUrl = jobForUpdate.LanguageListUrl
+            };
 
-                var cronType = GetCronFromRecurringType(updateScheduleJob.RecurringSchedule);
-                RecurringJob.AddOrUpdate(updateScheduleJob.ID.ToString(), () => _clients.CallWebApiAsync(updateScheduleJob.WebApiUrl, updateScheduleJob.JsonPayload), cronType);
-                return Ok();
-            }
-
-            return BadRequest();
+            _taskService.SaveThenRun(job);
+            return Ok();
         }
 
         [Route("{jobId:int}")]
@@ -84,39 +86,17 @@ namespace Spider.Scheduler.Controllers
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         public ActionResult Delete([FromRoute] int jobId)
         {
-            var job = _uof.ScheduleJobs.FindByID(jobId);
+            var job = _taskService.FindById(jobId);
             if (job == null)
             {
                 return BadRequest();
             }
-            _uof.ScheduleJobs.Remove(job);
-            _uof.SaveChanges();
-
+            _taskService.Remove(job);
 
             RecurringJob.RemoveIfExists(jobId.ToString());
-            return Ok();            
+            return Ok();
         }
-
-        private Func<string> GetCronFromRecurringType(ScheduleJob.RecurringScheduleType recurringSchedule)
-        {
-            switch (recurringSchedule)
-            {
-                case ScheduleJob.RecurringScheduleType.Daily:
-                    return Cron.Daily;
-                case ScheduleJob.RecurringScheduleType.Hourly:
-                    return Cron.Hourly;
-                case ScheduleJob.RecurringScheduleType.Minutely:
-                    return Cron.Minutely;
-                case ScheduleJob.RecurringScheduleType.Monthly:
-                    return Cron.Monthly;
-                case ScheduleJob.RecurringScheduleType.Weekly:
-                    return Cron.Weekly;
-                case ScheduleJob.RecurringScheduleType.Yearly:
-                    return Cron.Yearly;
-                default:
-                    return Cron.Daily;
-            }
-        }
+       
 
     }
 }

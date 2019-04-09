@@ -24,12 +24,12 @@ namespace Spider.Scheduler.Models
             Yearly
         }
 
-        public enum SyncType
+        public enum JobType
         {
             MSDNBlog,
             GithubRepository,
             GithubCommit,
-            GithubTopi            
+            GithubTopic            
         }
 
         public ScheduleJob()
@@ -46,9 +46,18 @@ namespace Spider.Scheduler.Models
         public RecurringScheduleType RecurringSchedule { get; set; }
 
         public RequestStatus Status { get; set; }
+
+        public JobType JobCategory { get; set; }
+
+        public string JobCategoryText => JobCategory.ToString();
+
         public int ID { get; set; }
 
         public string WebApiUrl { get; set; }
         public string JsonPayload { get; set; }
+
+        public string Name { get; set; }
+
+        public string LanguageListUrl { get; set; }
     }
 }

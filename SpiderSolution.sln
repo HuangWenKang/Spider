@@ -17,7 +17,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test", "Test", "{E15EAFBC-D
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "API", "API", "{060EE42D-1807-4FC9-9847-EA2ACAE503BE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Spider.Scheduler", "Spider.Scheduler\Spider.Scheduler.csproj", "{38AAE6B9-62E4-4DA1-866E-49E0B749208A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scheduler.API", "Spider.Scheduler\Scheduler.API.csproj", "{38AAE6B9-62E4-4DA1-866E-49E0B749208A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
