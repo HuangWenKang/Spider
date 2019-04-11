@@ -37,7 +37,7 @@ namespace Scheduler.API.Services
             return job;
         }
 
-        public List<ScheduleJob> FindByJobType(ScheduleJob.JobType jobType)
+        public List<ScheduleJob> FindByJobType(JobType jobType)
         {
             var jobs = _uof.ScheduleJobs.Find(j => j.JobCategory == jobType);
             return jobs;
@@ -61,21 +61,20 @@ namespace Scheduler.API.Services
                 _uof.ScheduleJobs.Add(job);
             }            
             _uof.SaveChanges();
-
-            var cronType = GetCronFromRecurringType(job.RecurringSchedule);
+            
             switch (job.JobCategory)
             {
                 case JobType.GithubCommit:                    
-                    RecurringJob.AddOrUpdate(job.ID.ToString(), () => SyncGithubCommits(job), cronType);
+                    RecurringJob.AddOrUpdate(job.ID.ToString(), () => SyncGithubCommits(job), job.CronExpression);
                     break;
                 case JobType.GithubRepository:
-                    RecurringJob.AddOrUpdate(job.ID.ToString(), () => SyncGithubRepositories(job), cronType);
+                    RecurringJob.AddOrUpdate(job.ID.ToString(), () => SyncGithubRepositories(job), job.CronExpression);
                     break;
                 case JobType.GithubTopic:
-                    RecurringJob.AddOrUpdate(job.ID.ToString(), () => SyncGithubTopics(job), cronType);
+                    RecurringJob.AddOrUpdate(job.ID.ToString(), () => SyncGithubTopics(job), job.CronExpression);
                     break;
                 case JobType.MSDNBlog:
-                    RecurringJob.AddOrUpdate(job.ID.ToString(), () => SyncMSDNBlog(job), cronType);
+                    RecurringJob.AddOrUpdate(job.ID.ToString(), () => SyncMSDNBlog(job), job.CronExpression);
                     break;
                 default:
                     Console.WriteLine("Default case");
@@ -113,27 +112,6 @@ namespace Scheduler.API.Services
                 jobPayload = _payloadEnricher.AppendTags(job.JsonPayload, languages);
             }
             await _webApiClients.CallWebApiAsync(job.WebApiUrl, jobPayload);
-        }
-
-        private Func<string> GetCronFromRecurringType(RecurringScheduleType recurringSchedule)
-        {
-            switch (recurringSchedule)
-            {
-                case RecurringScheduleType.Daily:
-                    return Cron.Daily;
-                case RecurringScheduleType.Hourly:
-                    return Cron.Hourly;
-                case RecurringScheduleType.Minutely:
-                    return Cron.Minutely;
-                case RecurringScheduleType.Monthly:
-                    return Cron.Monthly;
-                case RecurringScheduleType.Weekly:
-                    return Cron.Weekly;
-                case RecurringScheduleType.Yearly:
-                    return Cron.Yearly;
-                default:
-                    return Cron.Daily;
-            }
-        }
+        }        
     }
 }

@@ -12,17 +12,7 @@ namespace Spider.Scheduler.Models
             Failed,
             Removed,
             Stopped
-        }
-
-        public enum RecurringScheduleType
-        {
-            Daily,
-            Hourly,
-            Minutely,
-            Monthly,
-            Weekly,
-            Yearly
-        }
+        }        
 
         public enum JobType
         {
@@ -42,8 +32,6 @@ namespace Spider.Scheduler.Models
         public DateTime RequestDate { get; set; }
         
         public string StatusText { get { return Status.ToString(); } }
-        
-        public RecurringScheduleType RecurringSchedule { get; set; }
 
         public RequestStatus Status { get; set; }
 
@@ -59,5 +47,7 @@ namespace Spider.Scheduler.Models
         public string Name { get; set; }
 
         public string LanguageListUrl { get; set; }
+
+        public string CronExpression { get; set; }
     }
 }

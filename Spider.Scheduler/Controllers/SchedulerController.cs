@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Net;
 using Hangfire;
 using Microsoft.AspNetCore.Mvc;
-using Spider.Scheduler.Infrastructure.Repositories;
 using Spider.Scheduler.Models;
 using static Spider.Scheduler.Models.ScheduleJob;
 using System.Linq;
-using Scheduler.API.Infrastructure.Clients;
 using Scheduler.API.Services;
 
 namespace Spider.Scheduler.Controllers
@@ -30,28 +27,28 @@ namespace Spider.Scheduler.Controllers
             {
                 j.ID,
                 j.Name,
+                j.CronExpression,
                 j.WebApiUrl,
-                j.JsonPayload,
-                RecurringSchedule = j.RecurringSchedule.ToString(),
-                j.LanguageListUrl
+                j.JsonPayload,                
+                j.LanguageListUrl,                
             });
             return Ok(jobs);
         }
 
-        [Route("{schedule}/{jobType}")]
+        [Route("{jobType}")]
         [HttpPost]
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-        public ActionResult Create([FromRoute]RecurringScheduleType schedule, [FromRoute]JobType jobType, [FromBody] JobViewModel jobForCreation)
+        public ActionResult Create([FromRoute]JobType jobType, [FromBody] JobViewModel jobForCreation)
         {
             var job = new ScheduleJob()
             {
                 WebApiUrl = jobForCreation.WebApiUrl,
-                JsonPayload = jobForCreation.JsonPayload,
-                RecurringSchedule = schedule,
+                JsonPayload = jobForCreation.JsonPayload,                
                 Name = jobForCreation.Name,
                 JobCategory = jobType,
-                LanguageListUrl = jobForCreation.LanguageListUrl
+                LanguageListUrl = jobForCreation.LanguageListUrl,
+                CronExpression = jobForCreation.CronExpression
             };
 
             _taskService.SaveThenRun(job);
@@ -59,21 +56,22 @@ namespace Spider.Scheduler.Controllers
             return Ok();
         }
 
-        [Route("{schedule}/{jobType}")]
+        [Route("{jobType}")]
         [HttpPut]
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-        public ActionResult Edit([FromRoute]RecurringScheduleType schedule, [FromRoute]JobType jobType, [FromBody] JobViewModel jobForUpdate)
+        public ActionResult Edit([FromRoute]JobType jobType, [FromBody] JobViewModel jobForUpdate)
         {
             var job = new ScheduleJob()
             {
                 ID = jobForUpdate.Id,
-                Name = jobForUpdate.Name,
-                RecurringSchedule = schedule,
                 WebApiUrl = jobForUpdate.WebApiUrl,
-                JsonPayload = jobForUpdate.JsonPayload,
+                JsonPayload = jobForUpdate.JsonPayload,                
+                Name = jobForUpdate.Name,                                
                 JobCategory = jobType,
-                LanguageListUrl = jobForUpdate.LanguageListUrl
+                LanguageListUrl = jobForUpdate.LanguageListUrl,
+                CronExpression = jobForUpdate.CronExpression
+
             };
 
             _taskService.SaveThenRun(job);

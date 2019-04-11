@@ -1,4 +1,5 @@
 ﻿using Marvin.StreamExtensions;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
@@ -22,16 +23,16 @@ namespace Scheduler.API.Infrastructure.Clients
 
         public async Task<List<string>> FetchLanguageList(string webApiUrl)
         {                        
-            var request = new HttpRequestMessage(HttpMethod.Post, webApiUrl);
+            var request = new HttpRequestMessage(HttpMethod.Get, webApiUrl);
 
             using (var response = await _client.SendAsync(
                 request,
               HttpCompletionOption.ResponseHeadersRead,
               _cTokenSource.Token))
             {
-                var stream = await response.Content.ReadAsStreamAsync();
+                var payload = await response.Content.ReadAsStringAsync();
                 response.EnsureSuccessStatusCode();
-                return stream.ReadAndDeserializeFromJson<List<string>>();
+                return JsonConvert.DeserializeObject<List<string>>(payload);
 
             }
         }        

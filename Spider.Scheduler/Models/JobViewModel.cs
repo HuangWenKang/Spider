@@ -13,5 +13,7 @@ namespace Spider.Scheduler.Models
         public string WebApiUrl { get; set; }
         public string JsonPayload { get; set; }
         public string LanguageListUrl { get; set; }
+
+        public string CronExpression { get; set; }
     }
 }

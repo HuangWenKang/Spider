@@ -1,5 +1,4 @@
-﻿using System;
-using System.Net.Http;
+﻿using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
@@ -12,8 +11,7 @@ namespace Scheduler.API.Infrastructure.Clients
         private HttpClient _client;        
         public WebApiClients(HttpClient client)
         {
-            _client = client;
-            _client.Timeout = new TimeSpan(0, 0, 30);
+            _client = client;            
             _client.DefaultRequestHeaders.Clear();
             _client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("text/plain"));            
         }
