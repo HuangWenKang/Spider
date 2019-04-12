@@ -1,13 +1,11 @@
 ﻿using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace Scheduler.API.Infrastructure.Clients
 {
     public class WebApiClients
-    {
-        private readonly CancellationTokenSource _cTokenSource = new CancellationTokenSource();
+    {        
         private HttpClient _client;        
         public WebApiClients(HttpClient client)
         {
@@ -28,8 +26,7 @@ namespace Scheduler.API.Infrastructure.Clients
 
             using (var response = await _client.SendAsync(
                 request,
-              HttpCompletionOption.ResponseHeadersRead,
-              _cTokenSource.Token))
+              HttpCompletionOption.ResponseHeadersRead))
             {
                 var stream = await response.Content.ReadAsStreamAsync();
                 response.EnsureSuccessStatusCode();
