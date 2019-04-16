@@ -33,7 +33,10 @@ namespace Spider.Scheduler
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
-            services.Configure<ScheduleSettings>(options => Configuration.GetSection("ScheduleSettings").Bind(options));
+            var settings = Configuration.GetSection("ScheduleSettings").Get<ScheduleSettings>();
+            settings.ConnectionString = Configuration["CONNECTION_STRING"] ?? "";
+
+            services.Configure<ScheduleSettings>(options => options = settings);
             services.AddDbContext<JobContext>(o => o.UseInMemoryDatabase("JobDatabase"));
 
             services.AddScoped<IUnitOfWork, UnitofWork>();
@@ -52,8 +55,7 @@ namespace Spider.Scheduler
                 c.SwaggerDoc("v1", new Info { Title = "ScheduleJob API", Version = "v1" });
                 c.DescribeAllEnumsAsStrings();
             });
-
-            var settings = Configuration.GetSection("ScheduleSettings").Get<ScheduleSettings>();
+            
             services.AddHangfire(config =>
             {
                 if (string.IsNullOrWhiteSpace(settings.ConnectionString))
