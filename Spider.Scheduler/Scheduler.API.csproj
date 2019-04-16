@@ -22,4 +22,8 @@
     <PackageReference Include="Swashbuckle.AspNetCore" Version="4.0.1" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Common.Serilog\Common.Serilog.csproj" />
+  </ItemGroup>
+
 </Project>

@@ -15,6 +15,8 @@ using Hangfire.Mongo;
 using Scheduler.API.Infrastructure.Clients;
 using Scheduler.API.Infrastructure.Converters;
 using Scheduler.API.Services;
+using Common.Serilog.Filters;
+using Common.Serilog.Middleware;
 
 namespace Spider.Scheduler
 {
@@ -31,7 +33,11 @@ namespace Spider.Scheduler
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            services.AddMvc(options =>
+            {
+                options.Filters.Add(new TrackPerformanceFilter());
+
+            }).SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
             var settings = Configuration.GetSection("ScheduleSettings").Get<ScheduleSettings>();
             settings.ConnectionString = Configuration["CONNECTION_STRING"] ?? "";
@@ -79,7 +85,7 @@ namespace Spider.Scheduler
             }
 
             app.UseCors();
-            app.ConfigureCustomExceptionMiddleware();
+            app.UseApiExceptionHandler();
             app.UseMvc();
             app.UseSwagger();
             app.UseSwaggerUI(c =>
