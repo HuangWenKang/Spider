@@ -8,4 +8,8 @@ docker container run -p 8000:80 -e CONNECTION_STRING=mongodb://localhost:27017 r
 
 
 3) Remove:
+docker rm -f $(docker ps -aq)
 docker rmi -f $(docker images -q)
+
+4) Exec
+docker exec -it exampleAppWin PowerShell
