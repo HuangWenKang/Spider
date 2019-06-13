@@ -18,7 +18,10 @@ node {
         /* This builds the actual image; synonymous to
          * docker build on the command line */
 
-        app = docker.build("jenkins-pipeline/spider")
+        //app = docker.build("jenkins-pipeline/spider")
+        sh "docker build . -t spider.integration -f Dockerfile.Integration"
+        
+
     }
 
     stage('Test image') {
@@ -26,6 +29,7 @@ node {
          * For this example, we're using a Volkswagen-type approach ;-) */
 
         app.inside {
+            sh "docker run spider.integration"
             sh 'echo "Tests passed"'
         }
     }
