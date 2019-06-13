@@ -26,12 +26,9 @@ node('docker') {
 
     stage('Test image') {
         /* Ideally, we would run a test framework against our image.
-         * For this example, we're using a Volkswagen-type approach ;-) */
-
-        app.inside {
-            sh "docker run spider.integration"
-            sh 'echo "Tests passed"'
-        }
+         * For this example, we're using a Volkswagen-type approach ;-) */        
+        sh "docker run spider.integration"
+        sh 'echo "Tests passed"'        
     }
 
     stage('Push image') {
