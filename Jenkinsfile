@@ -25,6 +25,19 @@ node('docker') {
 
     }
 
+
+    stage('Pusblish UT Reports') {
+        containerID = sh (
+            script: "docker run -d spiderapp", 
+        returnStdout: true
+        ).trim()
+        echo "Container ID is ==> ${containerID}"
+        sh "docker cp ${containerID}:/TestResults/test_results.xml test_results.xml"
+        sh "docker stop ${containerID}"
+        sh "docker rm ${containerID}"
+        step([$class: 'MSTestPublisher', failOnError: false, testResultsFile: 'test_results.xml'])
+    }    
+
     stage('Test image') {
         /* Ideally, we would run a test framework against our image.
          * For this example, we're using a Volkswagen-type approach ;-) */        
