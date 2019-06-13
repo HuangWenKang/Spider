@@ -1,4 +1,4 @@
-﻿FROM microsoft/aspnetcore-build as build-image
+﻿FROM microsoft/dotnet:2.2-sdk as build-image
 
 WORKDIR /home/app
 
@@ -14,7 +14,7 @@ RUN dotnet test --verbosity=normal --results-directory /TestResults/ --logger "t
 
 RUN dotnet publish ./Scheduler.API/Scheduler.API.csproj -o /publish/
 
-FROM microsoft/aspnetcore
+FROM microsoft/dotnet:2.2-aspnetcore-runtime
 
 WORKDIR /publish
 

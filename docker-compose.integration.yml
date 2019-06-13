@@ -2,13 +2,13 @@ version: '3.1'
 
 services:  
   spiderapp:    
-    image: "spiderapp:B${BUILD_NUMBER}"
+    image: "spiderapp"
     build:
       context: .
   integration:
     depends_on:
       - spiderapp
-    image: "spiderapp:test-B${BUILD_NUMBER}"
+    image: "spiderapp:test"
     build:
       context: .
       dockerfile: Dockerfile.Integration

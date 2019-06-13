@@ -19,8 +19,8 @@ node('docker') {
          * docker build on the command line */
 
         //app = docker.build("jenkins-pipeline/spider")
-        sh "docker build . -t spiderapp:B${BUILD_NUMBER} -f Dockerfile"
-        sh "docker build . -t spiderapp:test-B${BUILD_NUMBER} -f Dockerfile.Integration"
+        sh "docker build . -t spiderapp -f Dockerfile"
+        sh "docker build . -t spiderapp:test -f Dockerfile.Integration"
         
 
     }
