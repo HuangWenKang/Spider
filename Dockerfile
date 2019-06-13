@@ -1,18 +1,26 @@
-﻿FROM microsoft/dotnet:2.2.0-aspnetcore-runtime AS base
-WORKDIR /app
-EXPOSE 80
+﻿FROM microsoft/aspnetcore-build as build-image
 
-FROM microsoft/dotnet:2.2.100-sdk AS build
-WORKDIR /src
+WORKDIR /home/app
+
+COPY ./*.sln ./
+COPY ./*/*.csproj ./
+RUN for file in $(ls *.csproj); do mkdir -p ./${file%.*}/ && mv $file ./${file%.*}/; done
+
+RUN dotnet restore
+
 COPY . .
-WORKDIR /src/Spider.Scheduler
-RUN dotnet restore -nowarn:msb3202,nu1503
-RUN dotnet build --no-restore -c Release -o /app
 
-FROM build AS publish
-RUN dotnet publish --no-restore -c Release -o /app
+RUN dotnet test --verbosity=normal --results-directory /TestResults/ --logger "trx;LogFileName=test_results.xml" ./HtmlSpider.Test/HtmlSpider.Test.csproj
 
-FROM base AS final
-WORKDIR /app
-COPY --from=publish /app .
+RUN dotnet publish ./Scheduler.API/Scheduler.API.csproj -o /publish/
+
+FROM microsoft/aspnetcore
+
+WORKDIR /publish
+
+COPY --from=build-image /publish .
+
+COPY --from=build-image /TestResults /TestResults
+
 ENTRYPOINT ["dotnet", "Scheduler.API.dll"]
+

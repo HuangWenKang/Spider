@@ -19,7 +19,8 @@ node('docker') {
          * docker build on the command line */
 
         //app = docker.build("jenkins-pipeline/spider")
-        sh "docker build . -t spider.integration -f Dockerfile.Integration"
+        sh "docker build . -t spiderapp:B${BUILD_NUMBER} -f Dockerfile"
+        sh "docker build . -t spiderapp:test-B${BUILD_NUMBER} -f Dockerfile.Integration"
         
 
     }
@@ -27,18 +28,15 @@ node('docker') {
     stage('Test image') {
         /* Ideally, we would run a test framework against our image.
          * For this example, we're using a Volkswagen-type approach ;-) */        
-        sh "docker run spider.integration"
-        sh 'echo "Tests passed"'        
+        sh "docker-compose -f docker-compose.integration.yml up --force-recreate --abort-on-container-exit"
+        sh "docker-compose -f docker-compose.integration.yml down -v"
+        sh 'echo "Tests passed"'
     }
 
     stage('Push image') {
         /* Finally, we'll push the image with two tags:
          * First, the incremental build number from Jenkins
          * Second, the 'latest' tag.
-         * Pushing multiple tags is cheap, as all the layers are reused. */
-        docker.withRegistry('https://registry.hub.docker.com', 'docker-hub-credentials') {
-            app.push("${env.BUILD_NUMBER}")
-            app.push("latest")
-        }
+         * Pushing multiple tags is cheap, as all the layers are reused. */        
     }
 }
